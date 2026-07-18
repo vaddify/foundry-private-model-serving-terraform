@@ -1,0 +1,24 @@
+# Copy to terraform.tfvars and edit, or pass with -var-file.
+subscription_id      = "00000000-0000-0000-0000-000000000000"
+resource_group_name  = "rg-foundry-eastus2"
+foundry_account_name = "foundry-demo-eus2" # must be globally unique + DNS-safe
+project_name         = "proj-demo-eus2"
+
+# Networking (private access). Subnets are /26.
+vnet_name                              = "vnet-foundry-eus2"
+virtual_network_address_space          = "192.168.0.0/24"
+agent_subnet_address_prefix            = "192.168.0.0/26"
+private_endpoint_subnet_address_prefix = "192.168.0.64/26"
+
+# Agents (optional). Leave false for plain model serving.
+enable_agent_capability_host = false
+
+# Model to deploy (catalog key). Override on the CLI to deploy others:
+#   terraform apply -var 'model_name=kimi-k2'
+model_name = "deepseek-v3"
+
+tags = {
+  project     = "model-serving"
+  environment = "dev"
+  managed_by  = "terraform"
+}
