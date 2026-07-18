@@ -16,6 +16,8 @@ Priority models (open-source / lower-cost first): **Kimi, DeepSeek**, then **GPT
 - Optional agent capability host (off by default)
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the diagram and a resource-by-resource breakdown.
+For a full, beginner-friendly walkthrough (prerequisites, deploy, calling the model, teardown,
+troubleshooting), see **[GUIDE.md](GUIDE.md)**.
 
 ## Prerequisites
 
