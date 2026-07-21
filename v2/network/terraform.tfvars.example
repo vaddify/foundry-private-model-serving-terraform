@@ -1,0 +1,12 @@
+subscription_id             = "00000000-0000-0000-0000-000000000000"
+network_resource_group_name = "rg-foundry-network"
+vnet_name                   = "vnet-foundry-eus2"
+vnet_address_space          = "192.168.0.0/24"
+pe_subnet_name              = "snet-pe"
+pe_subnet_prefix            = "192.168.0.64/26"
+
+tags = {
+  project     = "model-serving"
+  environment = "dev"
+  managed_by  = "terraform"
+}

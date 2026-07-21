@@ -1,0 +1,19 @@
+subscription_id           = "00000000-0000-0000-0000-000000000000"
+serve_resource_group_name = "rg-foundry-serve"
+foundry_account_name      = "foundry-serve-eus2" # globally unique + DNS-safe
+project_name              = "proj-serve-eus2"
+
+# Shared network (from the network root)
+network_resource_group_name = "rg-foundry-network"
+vnet_name                   = "vnet-foundry-eus2"
+pe_subnet_name              = "snet-pe"
+
+# Model to deploy (catalog key)
+model_name = "deepseek-v3"
+
+tags = {
+  project     = "model-serving"
+  environment = "dev"
+  managed_by  = "terraform"
+  workload    = "serving"
+}
