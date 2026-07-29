@@ -73,12 +73,13 @@ variable "enable_agent_capability_host" {
 
 # ---------------------------------------------------------------------------
 # Model selection. Pass the catalog key here, e.g.:
-#   terraform apply -var 'model_name=deepseek-r1'
+#   terraform apply -var 'model_name=claude-sonnet'
+# This branch focuses on Anthropic models (Opus / Sonnet).
 # ---------------------------------------------------------------------------
 variable "model_name" {
   type        = string
   description = "Catalog key of the model to deploy. See local.model_catalog in models.tf for supported values."
-  default     = "deepseek-v3"
+  default     = "claude-opus"
 }
 
 # Optional overrides. Leave null to use the values from the catalog.

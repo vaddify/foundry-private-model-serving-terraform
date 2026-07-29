@@ -71,7 +71,18 @@ locals {
       capacity = 10 # quota limit 450 (legacy; deprecates 2026-10-01)
     }
 
-    # ---- Priority 3: Anthropic (REQUIRES one-time Marketplace agreement) ----
+    # ---- Anthropic (BRANCH FOCUS) - REQUIRES a one-time Marketplace agreement ----
+    # Verified in East US 2 on 2026-07-29. Anthropic models bill under the shared
+    # "MaaS" quota bucket. Accept the model's Marketplace terms in the portal
+    # (Model catalog -> the Claude model -> Agree) before the first deployment,
+    # otherwise apply fails with a terms/agreement error.
+    "claude-opus" = {
+      name     = "claude-opus-5"
+      format   = "Anthropic"
+      version  = "2"
+      sku_name = "GlobalStandard"
+      capacity = 1
+    }
     "claude-sonnet" = {
       name     = "claude-sonnet-5"
       format   = "Anthropic"
@@ -79,10 +90,18 @@ locals {
       sku_name = "GlobalStandard"
       capacity = 1
     }
-    "claude-opus" = {
+    # Version-pinned alternates (use if you need a specific release):
+    "claude-opus-4-8" = {
       name     = "claude-opus-4-8"
       format   = "Anthropic"
       version  = "2"
+      sku_name = "GlobalStandard"
+      capacity = 1
+    }
+    "claude-sonnet-4-6" = {
+      name     = "claude-sonnet-4-6"
+      format   = "Anthropic"
+      version  = "1"
       sku_name = "GlobalStandard"
       capacity = 1
     }
