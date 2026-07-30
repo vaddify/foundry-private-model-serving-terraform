@@ -12,6 +12,19 @@
 >
 > Non-Anthropic models (Kimi, DeepSeek, GPT) still work on this branch unchanged.
 
+> ### ✅ Fix included on this branch — Anthropic `ModelProviderData`
+> Claude (Sonnet/Opus) deployments fail on the base template with:
+> `InvalidModelProviderData: ModelProviderData is required for Anthropic model deployments`
+> (and `AnthropicOrganizationCreationException` when `industry` is uppercase).
+>
+> This branch resolves it in [`models.tf`](models.tf) by:
+> 1. Sending a `modelProviderData` block (`organizationName`, `countryCode`, `industry`) **under `properties`**, only for `format = "Anthropic"` models.
+> 2. Forcing **`industry` lowercase** via `lower(...)` (uppercase is rejected).
+> 3. Using deployment API **`2025-10-01-preview`** (older versions don't recognize the field) with `schema_validation_enabled = false`.
+> 4. Adding inputs (`model_provider_industry`, `model_provider_organization_name`, `model_provider_country_code`) and a plan-time precondition so a missing value fails early with a clear message.
+>
+> Verified: the platform accepts this schema (the error is resolved). A full live deploy additionally requires **Claude quota** on the subscription (see prerequisites).
+
 Terraform to deploy a **network-isolated Microsoft Foundry** environment in **East US 2**
 and deploy a **model** (chosen by name) that you can serve/call privately from inside a VNet.
 
