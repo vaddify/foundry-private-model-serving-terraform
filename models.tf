@@ -117,6 +117,29 @@ locals {
     sku_name = coalesce(var.sku_name, local.selected.sku_name)
     capacity = coalesce(var.sku_capacity, local.selected.capacity)
   }
+
+  # Anthropic model deployments require ModelProviderData (industry,
+  # organizationName, countryCode). Included only for Anthropic-format models.
+  is_anthropic = local.model != null && local.model.format == "Anthropic"
+
+  model_provider_data = local.is_anthropic ? {
+    industry         = lower(var.model_provider_industry)
+    organizationName = var.model_provider_organization_name
+    countryCode      = var.model_provider_country_code
+  } : null
+
+  # Build properties, then drop null keys. modelProviderData is present only
+  # for Anthropic models (required); other keys apply to all model types.
+  deployment_properties = { for k, v in {
+    model = {
+      format  = local.model.format
+      name    = local.model.name
+      version = local.model.version
+    }
+    versionUpgradeOption = "OnceNewDefaultVersionAvailable"
+    raiPolicyName        = "Microsoft.DefaultV2"
+    modelProviderData    = local.model_provider_data
+  } : k => v if v != null }
 }
 
 # Guard: unknown model name -> readable error at plan time.
@@ -129,29 +152,39 @@ resource "terraform_data" "validate_model" {
   }
 }
 
+# Guard: Anthropic models need ModelProviderData fields.
+resource "terraform_data" "validate_anthropic" {
+  lifecycle {
+    precondition {
+      condition = !local.is_anthropic || (
+        var.model_provider_industry != null &&
+        var.model_provider_organization_name != null &&
+        var.model_provider_country_code != null
+      )
+      error_message = "Anthropic models require model_provider_industry, model_provider_organization_name, and model_provider_country_code."
+    }
+  }
+}
+
 resource "azapi_resource" "model_deployment" {
-  type      = "Microsoft.CognitiveServices/accounts/deployments@2025-06-01"
+  type      = "Microsoft.CognitiveServices/accounts/deployments@2025-10-01-preview"
   name      = var.model_name
   parent_id = azapi_resource.foundry.id
+
+  # modelProviderData (Anthropic) is newer than the provider's embedded schema.
+  schema_validation_enabled = false
 
   body = {
     sku = {
       name     = local.model.sku_name
       capacity = local.model.capacity
     }
-    properties = {
-      model = {
-        format  = local.model.format
-        name    = local.model.name
-        version = local.model.version
-      }
-      versionUpgradeOption = "OnceNewDefaultVersionAvailable"
-      raiPolicyName        = "Microsoft.DefaultV2"
-    }
+    properties = local.deployment_properties
   }
 
   depends_on = [
     azapi_resource.project,
     terraform_data.validate_model,
+    terraform_data.validate_anthropic,
   ]
 }

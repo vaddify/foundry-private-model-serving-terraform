@@ -107,6 +107,28 @@ variable "sku_capacity" {
   default     = null
 }
 
+# ---------------------------------------------------------------------------
+# ModelProviderData - REQUIRED for Anthropic (Claude) model deployments.
+# Ignored for non-Anthropic models. countryCode is ISO 3166-1 alpha-2 (e.g. US).
+# ---------------------------------------------------------------------------
+variable "model_provider_industry" {
+  type        = string
+  description = "Industry for Anthropic ModelProviderData (e.g. Technology, Financial Services, Healthcare)."
+  default     = null
+}
+
+variable "model_provider_organization_name" {
+  type        = string
+  description = "Organization name for Anthropic ModelProviderData."
+  default     = null
+}
+
+variable "model_provider_country_code" {
+  type        = string
+  description = "ISO 3166-1 alpha-2 country code for Anthropic ModelProviderData (e.g. US)."
+  default     = null
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags applied to all resources."

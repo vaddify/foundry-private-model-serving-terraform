@@ -19,6 +19,13 @@ enable_agent_capability_host = false
 # subscription (portal: Model catalog -> the Claude model -> Agree) before apply.
 model_name = "claude-opus"
 
+# REQUIRED for Anthropic (Claude) models - sent as modelProviderData.
+# industry must be lowercase: technology | finance | healthcare | education |
+# retail | manufacturing | government | media | other
+model_provider_industry          = "technology"
+model_provider_organization_name = "Your Organization Legal Name"
+model_provider_country_code      = "US"
+
 tags = {
   project     = "model-serving"
   environment = "dev"
