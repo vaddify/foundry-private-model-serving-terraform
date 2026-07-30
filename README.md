@@ -1,5 +1,17 @@
 # Microsoft Foundry — Private Model Serving (Terraform)
 
+> ## 🅰️ Branch: `feature/anthropic-models`
+> **Purpose:** this branch focuses on deploying **Anthropic Claude** models (**Opus** & **Sonnet**)
+> on the private Foundry template. It defaults `model_name` to `claude-opus`, ships the latest
+> Opus/Sonnet versions (plus version-pinned alternates), and adds the Claude-specific
+> `modelProviderData` attestation required by the platform.
+>
+> **Before deploying Claude, read [`ANTHROPIC-PREREQUISITES.md`](ANTHROPIC-PREREQUISITES.md)** —
+> subscription eligibility, per-model quota (the usual blocker), the `modelProviderData`
+> attestation fields (org / country / **lowercase** industry), region, and permissions.
+>
+> Non-Anthropic models (Kimi, DeepSeek, GPT) still work on this branch unchanged.
+
 Terraform to deploy a **network-isolated Microsoft Foundry** environment in **East US 2**
 and deploy a **model** (chosen by name) that you can serve/call privately from inside a VNet.
 
