@@ -1,0 +1,55 @@
+# Copy to terraform.tfvars and fill in. Do NOT commit secrets.
+# This module creates exactly one resource: an MCP connection on an EXISTING
+# Foundry project. It creates no account, no project, no agent.
+#
+# RESULT OF FIRST RUN (eastus2, AIServices account, project with no agent):
+#   Pass 1 SUCCEEDED. The connection was created in 8s over plain ARM.
+#   Nothing related to Agent Service was provisioned or required.
+#   The RP stored the values as sent and derived:
+#     group = "AzureAI", isDefault = true,
+#     peRequirement = "NotRequired", peStatus = "NotApplicable"
+#   Conclusion: creating the connection does NOT depend on Agent Service.
+#   Still unproven: whether a Toolbox can then SERVE it. See validate.ps1.
+
+subscription_id     = "00000000-0000-0000-0000-000000000000"
+resource_group_name = "rg-existing-foundry"
+account_name        = "existing-foundry-account"
+project_name        = "existing-foundry-project"
+
+# --- Pass 1: simplest possible case, isolates the MCP question -------------
+mcp_server_url          = "https://api.githubcopilot.com/mcp"
+mcp_auth_type           = "None"
+mcp_connection_category = "CustomKeys"
+
+# --- Pass 2: does the RP accept an explicit MCP category? -----------------
+# ANSWERED: NO. category = "MCP" is rejected with
+#   HTTP 400 UserError "Error when parsing request; unable to deserialize
+#   request body" (componentName: account-rp)
+# Rejected identically on BOTH 2025-06-01 and 2026-05-15-preview, so this is
+# not a stale-API-version problem. The Bicep schema types category as an enum
+# terminating in "| string", which suggests free-form values are allowed, but
+# the RP does not honour that. Use a supported category such as CustomKeys.
+# mcp_connection_category = "MCP"
+
+# --- Pass 3: header auth ---------------------------------------------------
+# mcp_auth_type   = "CustomKeys"
+# mcp_custom_keys = { Authorization = "Bearer <token>" }
+
+# --- Pass 4: OAuth2, the only mode that preserves caller identity ----------
+# mcp_auth_type        = "OAuth2"
+# oauth2_client_id     = "00000000-0000-0000-0000-000000000000"
+# oauth2_client_secret set via env: $env:TF_VAR_oauth2_client_secret = "..."
+
+# --- Pass 5: only after 1-4 pass. Points at the private Kong MCP listener. -
+# This is the one that decides whether the Kong lane is reachable this way.
+# Note peRequirement came back "NotRequired" for a public target; watch what
+# it becomes for a private one, as that is the tell for whether the Toolbox
+# egress can traverse a private endpoint at all.
+# mcp_server_url = "https://kong.internal.gsk.com/mcp"
+
+# --- API version -----------------------------------------------------------
+# Available on Microsoft.CognitiveServices/accounts/projects/connections:
+#   2026-05-15-preview, 2026-05-01, 2026-03-15-preview, 2026-03-01,
+#   2026-01-15-preview, 2025-12-01, 2025-10-01-preview, 2025-09-01,
+#   2025-07-01-preview, 2025-06-01, 2025-04-01-preview
+# connection_api_version = "2025-06-01"
